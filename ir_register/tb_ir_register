@@ -1,0 +1,93 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: Rahmat Mozafari
+-- 
+-- Create Date: 04.02.2020 21:31:24
+-- Design Name: 
+-- Module Name: tb_ir - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity tb_ir_register is
+--  Port ( );
+end tb_ir_register;
+
+architecture Behavioral of tb_ir_register is
+component ir_register
+    port(
+               clk, rst, tdi: in std_logic;
+               irc_p_in_1,irc_p_in_2, irc_p_in_3,irc_p_in_4: in std_logic;
+               irc_cs_mux_ctr, irc_csff_en, irc_1ff_en: in std_logic;
+               irc_p_out_1, irc_p_out_2,irc_p_out_3,irc_p_out_4: out std_logic;
+               tdo: out std_logic
+        );
+        
+        end component;
+ SIGNAL clk, rst, tdi: std_logic :='0';
+ SIGNAL irc_p_in_1,irc_p_in_2, irc_p_in_3,irc_p_in_4: std_logic :='0';
+ SIGNAL irc_cs_mux_ctr, irc_csff_en, irc_1ff_en: std_logic :='0';
+ SIGNAL irc_p_out_1, irc_p_out_2,irc_p_out_3,irc_p_out_4: std_logic :='0';
+ SIGNAL tdo: std_logic;
+ 
+ CONSTANT clk_period : time :=10ns;
+        
+begin
+-- UUT
+    uut: ir_register port map(
+        clk => clk, rst => rst, tdi =>tdi,
+        irc_p_in_1=>irc_p_in_1, irc_p_in_2 =>irc_p_in_2, irc_p_in_3 =>irc_p_in_3, irc_p_in_4=>irc_p_in_4,
+        irc_cs_mux_ctr =>irc_cs_mux_ctr, irc_csff_en=>irc_csff_en, irc_1ff_en=>irc_1ff_en,
+        irc_p_out_1=>irc_p_out_1, irc_p_out_2=>irc_p_out_2, irc_p_out_3=>irc_p_out_3, irc_p_out_4=>irc_p_out_4,
+        tdo =>tdo
+        );
+clk_process :process
+begin
+    clk <='0';
+    wait for clk_period/2;
+    clk <='1';
+    wait for clk_period/2;
+    end process;
+    
+    -- stimulus process
+    stimulus :process
+    begin
+    rst <= '1';
+    wait for clk_period*5;
+    rst <='0';
+    wait for clk_period*2;
+    tdi <= '1';
+
+    irc_cs_mux_ctr <='1';       -- shift mode
+    irc_csff_en <= '1';         -- enable for shift
+    wait for clk_period;
+    irc_1ff_en  <= '0';
+    wait for clk_period*6;
+    irc_csff_en <='0';
+    irc_p_in_1 <='1';
+    wait for clk_period;
+    irc_csff_en <= '1';
+    wait for clk_period;
+    end process;
+end Behavioral;
